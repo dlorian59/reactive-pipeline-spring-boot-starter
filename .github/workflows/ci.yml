@@ -1,0 +1,31 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: reactive-pipeline-spring-boot-starter
+      - uses: actions/checkout@v4
+        with:
+          repository: 59Alex/reactive-pipeline-kit
+          path: reactive-pipeline-kit
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install the unpublished core locally
+        working-directory: reactive-pipeline-kit
+        run: ./gradlew publishToMavenLocal --no-daemon
+      - name: Verify and package the starter
+        working-directory: reactive-pipeline-spring-boot-starter
+        run: ./gradlew build publishToMavenLocal --no-daemon
+      - name: Run the packaged-artifact consumer
+        working-directory: reactive-pipeline-spring-boot-starter
+        run: ./gradlew -p examples/product-enrichment run --no-daemon
