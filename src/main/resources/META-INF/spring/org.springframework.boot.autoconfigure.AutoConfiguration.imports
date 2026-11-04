@@ -1,1 +1,2 @@
 io.github.alex59.pipeline.spring.autoconfigure.PipelineAutoConfiguration
+io.github.alex59.pipeline.spring.autoconfigure.PipelineAopAutoConfiguration

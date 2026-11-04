@@ -1,5 +1,7 @@
 # 0.1.0 — enrich product records with Spring Boot
 
+[Complete API reference](reference.en.md)
+
 [EN](en.md) · [RU](ru.md) · [Versions](../index.md) · [README](../../README.md)
 
 ## Task and ownership
@@ -159,5 +161,36 @@ Baseline bytecode is Java 17 without preview. Spring Boot 4.1.2's [upstream comp
 is Java 17–27; exact local checks are reported in
 [verification](../VERIFICATION.md). The integration follows
 [Spring Boot's auto-configuration contract](https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html).
+
+## Apply a policy to an injected service
+
+For a single Mono/Flux service method, enable reactive.pipeline.aop.enabled and
+annotate a public non-final method with @ReactivePolicy. Default retrySafe=false
+suppresses retries even when the policy budget is positive. Use retrySafe=true
+only for an operation whose whole method can safely run again.
+
+```java
+@ReactivePolicy(retrySafe = true)
+public Mono<EnrichedProduct> lookup(Product product) {
+    return read(product);
+}
+```
+
+This method belongs to [AnnotatedCatalogService.java](../../examples/product-enrichment/src/main/java/example/AnnotatedCatalogService.java),
+including imports and its HTTP implementation. [AnnotatedExampleApplication.java](../../examples/product-enrichment/src/main/java/example/AnnotatedExampleApplication.java)
+injects the proxy, declares policies and subscribes; it checks no method work
+occurs before subscription. No changes to PipelineFactory are required.
+
+```sh
+./gradlew -p examples/product-enrichment run -PexampleMain=example.AnnotatedExampleApplication
+```
+
+Expected: monoMethodAttempts=3, fluxMethodAttempts=1, annotatedHttpRequests=5.
+The sample also selects a named policy for a Flux method. Flux never retries
+after its first emitted item; its timeout is an inactivity timeout. Self-calls
+bypass the proxy. Choose one retry owner instead of stacking a pipeline policy
+and annotation on the same I/O. See the [complete AOP contract](reference.en.md#aop-service-methods)
+for cancellation, empty results, policy lookup, transactions and advisor order.
+
 
 [Run and inspect the example](../../examples/product-enrichment/README.md#english) · [Back to versions](../index.md) · [README](../../README.md)

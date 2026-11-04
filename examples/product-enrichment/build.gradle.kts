@@ -13,4 +13,6 @@ java {
             .getOrElse(JavaVersion.current().majorVersion.toInt())))
 }
 tasks.withType<JavaCompile>().configureEach { options.release.set(17); options.encoding = "UTF-8" }
-application { mainClass.set("example.ExampleApplication") }
+application {
+    mainClass.set(providers.gradleProperty("exampleMain").getOrElse("example.ExampleApplication"))
+}

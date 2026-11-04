@@ -30,6 +30,7 @@ tasks.withType<Jar>().configureEach { from("LICENSE") { into("META-INF") } }
 dependencies {
     api(platform("org.springframework.boot:spring-boot-dependencies:$bootVersion"))
     api("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework:spring-aop")
     api("io.github.59alex:reactive-pipeline-kit:0.3.0")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:$bootVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

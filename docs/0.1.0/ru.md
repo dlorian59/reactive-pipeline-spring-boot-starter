@@ -1,5 +1,7 @@
 # 0.1.0 — обогащение товаров со Spring Boot
 
+[Полный справочник API](reference.ru.md)
+
 [EN](en.md) · [RU](ru.md) · [Версии](../index.md) · [README](../../README.md)
 
 ## Задача и ответственность
@@ -160,5 +162,36 @@ httpRequests=3; product1Attempts=2; product2Attempts=1
 — Java 17–27; фактические локальные проверки указаны в
 [отчёте](../VERIFICATION.md). Интеграция следует
 [контракту автоконфигурации Spring Boot](https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html).
+
+## Политика для внедрённого сервиса
+
+Для одного Mono/Flux-метода включите reactive.pipeline.aop.enabled и добавьте
+@ReactivePolicy к публичному нефинальному методу. По умолчанию retrySafe=false
+запрещает повторы даже при положительном бюджете политики. retrySafe=true
+допустим, только когда весь метод можно безопасно выполнить снова.
+
+```java
+@ReactivePolicy(retrySafe = true)
+public Mono<EnrichedProduct> lookup(Product product) {
+    return read(product);
+}
+```
+
+Метод взят из [AnnotatedCatalogService.java](../../examples/product-enrichment/src/main/java/example/AnnotatedCatalogService.java);
+там находятся импорты и HTTP-реализация. [AnnotatedExampleApplication.java](../../examples/product-enrichment/src/main/java/example/AnnotatedExampleApplication.java)
+внедряет proxy, объявляет политики и подписывается, проверяя отсутствие работы до
+подписки. PipelineFactory остаётся прежним.
+
+```sh
+./gradlew -p examples/product-enrichment run -PexampleMain=example.AnnotatedExampleApplication
+```
+
+Ожидается: monoMethodAttempts=3, fluxMethodAttempts=1, annotatedHttpRequests=5.
+Пример также выбирает именованную политику для Flux. После первой выданной записи
+Flux не повторяется; его таймаут измеряет отсутствие новых сигналов данных.
+Вызов через this обходит proxy. Выберите одного владельца retry для I/O вместо
+одновременного повтора политикой шага и аннотацией. [Полный контракт AOP](reference.ru.md#aop-для-service-методов)
+описывает отмену, пустые результаты, выбор политики, транзакции и порядок advice.
+
 
 [Запуск и исходники примера](../../examples/product-enrichment/README.md#русский) · [Назад к версиям](../index.md) · [README](../../README.md)

@@ -39,6 +39,26 @@ bodies; body buffering, authentication and production endpoint policy remain the
 application's responsibility. HTTP GET is chosen because retrying writes needs
 an application idempotency contract.
 
+### Annotated service mode
+
+```sh
+./gradlew -p examples/product-enrichment run -PexampleMain=example.AnnotatedExampleApplication
+```
+
+[AnnotatedCatalogService.java](src/main/java/example/AnnotatedCatalogService.java)
+contains the annotated Mono/Flux methods. [AnnotatedExampleApplication.java](src/main/java/example/AnnotatedExampleApplication.java)
+uses the injected proxy, supplies default/named StepPolicy beans and asserts
+laziness and HTTP attempt counts. No self-invocation is used. The complete
+[policy/proxy contract](../../docs/0.1.0/reference.en.md#aop-service-methods)
+explains why retrySafe must be explicit and why Flux stops retrying after output.
+
+```text
+annotatedProducts=[BK-1 / books, GM-2 / games]
+annotatedCategories=[books, games]
+monoMethodAttempts=3; fluxMethodAttempts=1; lazy=true
+annotatedHttpRequests=5; product1=3; product2=2
+```
+
 [← English guide](../../docs/0.1.0/en.md)
 
 ## Русский
@@ -78,5 +98,25 @@ httpRequests=3; product1Attempts=2; product2Attempts=1
 сервер возвращает небольшие синтетические ответы; лимиты буферизации,
 аутентификация и правила рабочих адресов принадлежат приложению. HTTP GET выбран
 потому, что повторы записи требуют прикладного контракта идемпотентности.
+
+### Режим аннотированного сервиса
+
+```sh
+./gradlew -p examples/product-enrichment run -PexampleMain=example.AnnotatedExampleApplication
+```
+
+[AnnotatedCatalogService.java](src/main/java/example/AnnotatedCatalogService.java)
+содержит Mono/Flux-методы с аннотациями. [AnnotatedExampleApplication.java](src/main/java/example/AnnotatedExampleApplication.java)
+использует внедрённый proxy, объявляет стандартную/именованную StepPolicy и
+проверяет ленивый вызов и число HTTP-попыток. Вызовов через this нет.
+[Контракт политики/proxy](../../docs/0.1.0/reference.ru.md#aop-для-service-методов)
+объясняет явное retrySafe и запрет повторов Flux после выдачи данных.
+
+```text
+annotatedProducts=[BK-1 / books, GM-2 / games]
+annotatedCategories=[books, games]
+monoMethodAttempts=3; fluxMethodAttempts=1; lazy=true
+annotatedHttpRequests=5; product1=3; product2=2
+```
 
 [← Руководство](../../docs/0.1.0/ru.md) · [README](../../README.md)

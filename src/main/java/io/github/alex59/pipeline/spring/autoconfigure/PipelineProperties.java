@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.util.Objects;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
 /**
  * Immutable startup settings for the pipeline factory, without dynamic refresh.
@@ -12,24 +13,48 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  * @param concurrency positive active record limit per processing stream
  * @param ordering input or completion ordering
  * @param step policy defaults for explicitly selected steps
+ * @param aop opt-in proxy advice settings
  */
 @ConfigurationProperties(prefix = "reactive.pipeline", ignoreUnknownFields = false)
 public record PipelineProperties(@DefaultValue("true") boolean enabled,
                                  @DefaultValue("4") int concurrency,
                                  @DefaultValue("INPUT") Ordering ordering,
-                                 @DefaultValue StepDefaults step) {
+                                 @DefaultValue StepDefaults step,
+                                 @DefaultValue AopDefaults aop) {
     /**
      * Validates settings before application pipelines can be constructed.
      * @param enabled whether auto-configuration is enabled
      * @param concurrency positive record subscription limit
      * @param ordering output ordering
      * @param step explicit attempt defaults
+     * @param aop opt-in proxy settings
      */
+    @ConstructorBinding
     public PipelineProperties {
         if (concurrency < 1) throw new IllegalArgumentException("reactive.pipeline.concurrency must be positive");
         Objects.requireNonNull(ordering, "reactive.pipeline.ordering");
         Objects.requireNonNull(step, "reactive.pipeline.step");
+        Objects.requireNonNull(aop, "reactive.pipeline.aop");
     }
+
+    /**
+     * Keeps the original constructor available with AOP disabled.
+     * @param enabled whether auto-configuration is enabled
+     * @param concurrency positive record subscription limit
+     * @param ordering output ordering
+     * @param step explicit attempt defaults
+     */
+    public PipelineProperties(boolean enabled, int concurrency, Ordering ordering, StepDefaults step) {
+        this(enabled, concurrency, ordering, step, new AopDefaults(false, Integer.MAX_VALUE));
+    }
+
+    /**
+     * Proxy advice settings. Lower order values wrap later advisors.
+     * @param enabled opt-in activation, disabled by default
+     * @param order Spring advisor order; by default other ordered advice is outside this boundary
+     */
+    public record AopDefaults(@DefaultValue("false") boolean enabled,
+                              @DefaultValue("2147483647") int order) { }
 
     /**
      * Attempt settings; retries apply only to IOException and TimeoutException by default.

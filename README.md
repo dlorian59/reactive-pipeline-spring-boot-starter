@@ -5,6 +5,8 @@
 
 **Version:** [0.1.0 guide](docs/0.1.0/en.md) · [All versions](docs/index.md) · Java 17+ · Spring Boot 4.1.2
 
+[Complete API reference](docs/0.1.0/reference.en.md) · [Annotated service example](examples/product-enrichment/src/main/java/example/AnnotatedExampleApplication.java)
+
 Turn a business record into an enriched view with an ordinary typed Reactor
 pipeline. The starter supplies configuration, a factory, a step policy and an
 observer. Your application writes validation, the remote call and the output
@@ -31,6 +33,7 @@ return pipelines.<Product>start()
 | Typed pipeline and configured processing defaults | [Business pipeline](examples/product-enrichment/src/main/java/example/ProductEnrichment.java), [processing records](examples/product-enrichment/src/main/java/example/DemoChecks.java) |
 | Timeout and retry on selected I/O steps | [HTTP status classification](examples/product-enrichment/src/main/java/example/CatalogClient.java) |
 | Concurrency, order and attempt settings | [application.properties](examples/product-enrichment/src/main/resources/application.properties) |
+| Opt-in service AOP: lazy Mono/Flux, explicit retry safety | [Annotated service](examples/product-enrichment/src/main/java/example/AnnotatedCatalogService.java), [contract](docs/0.1.0/reference.en.md#aop-service-methods) |
 | User beans override defaults | [Policy and factory](examples/product-enrichment/src/main/java/example/CustomDefaults.java), [observer](examples/product-enrichment/src/main/java/example/DemoChecks.java) |
 
 From sibling local checkouts, build the core dependency first:
@@ -60,6 +63,8 @@ release is claimed. [MIT](LICENSE) · [Dependency notices](THIRD-PARTY-NOTICES.m
 
 **Версия:** [Руководство 0.1.0](docs/0.1.0/ru.md) · [Все версии](docs/index.md) · Java 17+ · Spring Boot 4.1.2
 
+[Полный справочник API](docs/0.1.0/reference.ru.md) · [Пример аннотированного сервиса](examples/product-enrichment/src/main/java/example/AnnotatedExampleApplication.java)
+
 Преобразуйте бизнес-запись в обогащённую модель обычным типизированным пайплайном
 Reactor. Стартер предоставляет настройки, фабрику, политику шага и наблюдатель.
 Приложение описывает проверку, запрос и выходное преобразование. Новых DSL,
@@ -86,6 +91,7 @@ return pipelines.<Product>start()
 | Типизированный пайплайн и настройки обработки | [Бизнес-пайплайн](examples/product-enrichment/src/main/java/example/ProductEnrichment.java), [обработка записей](examples/product-enrichment/src/main/java/example/DemoChecks.java) |
 | Таймаут и повтор выбранных I/O-шагов | [Классификация HTTP-статусов](examples/product-enrichment/src/main/java/example/CatalogClient.java) |
 | Параллельность, порядок и настройки попыток | [application.properties](examples/product-enrichment/src/main/resources/application.properties) |
+| Явно включаемый AOP: ленивые Mono/Flux, разрешение безопасных повторов | [Аннотированный сервис](examples/product-enrichment/src/main/java/example/AnnotatedCatalogService.java), [полный контракт](docs/0.1.0/reference.ru.md) |
 | Приоритет beans приложения | [Политика и фабрика](examples/product-enrichment/src/main/java/example/CustomDefaults.java), [наблюдатель](examples/product-enrichment/src/main/java/example/DemoChecks.java) |
 
 Из соседних локальных каталогов сначала соберите зависимость core:

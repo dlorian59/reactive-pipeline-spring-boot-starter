@@ -1,8 +1,38 @@
-# Verification / Проверки — 2026-11-04
+# Verification / Проверки — 2026-11-05
 
 [EN guide](0.1.0/en.md) · [Руководство](0.1.0/ru.md) · [Versions / Версии](index.md) · [README](../README.md)
 
 ## English
+
+### Current AOP change — 2026-11-05
+
+- Java 17: build and Maven Local publication passed; 18 starter tests passed
+  (11 existing configuration tests plus 7 real-proxy AOP tests).
+- Independent annotated consumer on Java 17 passed: lazy=true,
+  monoMethodAttempts=3, fluxMethodAttempts=1, annotatedHttpRequests=5.
+- Original factory-based consumer on Java 17 passed unchanged:
+  validationRuns=2, catalogAttempts=3, httpRequests=3.
+- JAR classes are version 61.0 (Java 17, no preview); Gradle API/runtime variants
+  require JVM 17. Eight generated properties, two auto-configuration imports and
+  the MIT license are packaged. Spring AOP is present; AspectJ and optional core
+  Java 25/27 modules are not dependencies.
+- Markdown navigation: 180 starter and 287 core relative file/anchor/asset links
+  resolve. Runnable Java example comments are paired EN then RU.
+- The core algorithms were not changed, and its suite/optional runtime matrix
+  was not rerun for this AOP integration. Actual AOP execution was checked on
+  Java 17 only; the earlier Java 25 result below concerns the original consumer.
+
+```sh
+./gradlew build publishToMavenLocal -PtestJavaVersion=17 --no-daemon --max-workers=2
+./gradlew -p examples/product-enrichment run -PexampleJava=17 -PexampleMain=example.AnnotatedExampleApplication --no-daemon --max-workers=2
+./gradlew -p examples/product-enrichment run -PexampleJava=17 --no-daemon --max-workers=2
+```
+
+Reports: build/test-results/test. The examples resolve the Maven Local JAR without
+project substitution. The generic advice-chain test covers replay of subsequent
+advice, not every transaction/security/tracing combination. No remote publication.
+
+### Previous factory integration — 2026-11-04
 
 Local Linux checks used Gradle 9.8.2, Spring Boot 4.1.2, Reactor 3.8.8 and the
 locally published reactive-pipeline-kit 0.3.0. The core test suite was not rerun:
@@ -45,6 +75,30 @@ reliability claim is made by the small loopback example. No remote registry
 publication was performed; artifacts were published only to Maven Local.
 
 ## Русский
+
+### Текущее изменение AOP — 2026-11-05
+
+- Java 17: сборка и публикация в Maven Local успешны; прошли 18 тестов стартера
+  (11 прежних конфигурационных и 7 новых проверок настоящего AOP proxy).
+- Независимый аннотированный consumer Java 17 прошёл: lazy=true,
+  monoMethodAttempts=3, fluxMethodAttempts=1, annotatedHttpRequests=5.
+- Прежний consumer с фабрикой на Java 17 сохранил результат:
+  validationRuns=2, catalogAttempts=3, httpRequests=3.
+- Байткод JAR — 61.0, Java 17 без preview; API/runtime-варианты Gradle требуют
+  JVM 17. Упакованы восемь сгенерированных свойств, две записи автоконфигурации и
+  MIT. Есть Spring AOP; AspectJ и модули core Java 25/27 не включены в зависимости.
+- Проверены 180 ссылок/якорей/ресурсов стартера и 287 core; комментарии Java-примеров
+  идут парами EN, затем RU.
+- Алгоритмы core не менялись; его тесты и матрица дополнительных модулей повторно
+  не запускались. Новый AOP проверен только на Java 17. Прежний результат Java 25
+  ниже относится к consumer с фабрикой.
+
+Команды текущей проверки приведены выше, отчёты — build/test-results/test.
+Примеры используют JAR Maven Local без подстановки проекта. Тест следующей
+advice-chain проверяет повтор внутренних advice, а не всю матрицу транзакций,
+security и tracing. Удалённой публикации нет.
+
+### Предыдущая интеграция фабрики — 2026-11-04
 
 Локальная проверка на Linux: Gradle 9.8.2, Spring Boot 4.1.2, Reactor 3.8.8,
 reactive-pipeline-kit 0.3.0 из Maven Local. Полный набор тестов core повторно не
