@@ -13,7 +13,7 @@ jobs:
           path: reactive-pipeline-spring-boot-starter
       - uses: actions/checkout@v4
         with:
-          repository: 59Alex/reactive-pipeline-kit
+          repository: dlorian59/reactive-pipeline-kit
           path: reactive-pipeline-kit
       - uses: actions/setup-java@v4
         with:

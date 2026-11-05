@@ -45,10 +45,10 @@ publishing {
             pom {
                 name.set("Reactive Pipeline Spring Boot Starter")
                 description.set("Spring Boot defaults and typed factory for reactive-pipeline-kit")
-                url.set("https://github.com/59Alex/reactive-pipeline-spring-boot-starter")
+                url.set("https://github.com/dlorian59/reactive-pipeline-spring-boot-starter")
                 licenses { license { name.set("MIT License"); url.set("https://opensource.org/license/mit") } }
-                developers { developer { id.set("59Alex"); name.set("Aleksandr Kashevarov") } }
-                scm { url.set("https://github.com/59Alex/reactive-pipeline-spring-boot-starter") }
+                developers { developer { id.set("dlorian59"); name.set("Aleksandr Kashevarov") } }
+                scm { url.set("https://github.com/dlorian59/reactive-pipeline-spring-boot-starter") }
             }
         }
     }
