@@ -2,6 +2,7 @@ package io.github.alex59.pipeline.spring;
 
 import io.github.alex59.pipeline.Ordering;
 import io.github.alex59.pipeline.Pipeline;
+import io.github.alex59.pipeline.ProcessingOptions;
 import io.github.alex59.pipeline.StepObserver;
 import io.github.alex59.pipeline.StepPolicy;
 import java.util.Objects;
@@ -35,12 +36,14 @@ public final class PipelineFactory {
     }
 
     /**
-     * Starts an ordinary immutable core pipeline with the configured observer.
+     * Starts an ordinary immutable core pipeline with the configured observer and
+     * processing defaults. Call pipeline.process(source) directly in your service.
      * @param <T> input type
      * @return a new pipeline definition, not an execution
      */
     public <T> Pipeline<T, T> start() {
-        return Pipeline.<T>start().observe(observer);
+        return Pipeline.<T>start().observe(observer)
+                .withProcessing(new ProcessingOptions(concurrency, ordering));
     }
 
     /**

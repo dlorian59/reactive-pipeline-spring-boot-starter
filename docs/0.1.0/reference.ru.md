@@ -11,7 +11,7 @@
 | Публичная возможность | Поведение | Исходник и запускаемый пример |
 | --- | --- | --- |
 | PipelineFactory(StepPolicy, int, Ordering, StepObserver) | Неизменяемые явные настройки; concurrency положителен, остальные аргументы не null | [Фабрика](../../src/main/java/io/github/alex59/pipeline/spring/PipelineFactory.java), [собственная фабрика](../../examples/product-enrichment/src/main/java/example/CustomDefaults.java) |
-| start<T>() | Возвращает core Pipeline<T,T> с заданным наблюдателем; ничего не запускает и не регистрирует | [Бизнес-пайплайн](../../examples/product-enrichment/src/main/java/example/ProductEnrichment.java) |
+| start<T>() | Возвращает core Pipeline<T,T> с заданными observer и настройками обработки; ничего не запускает и не регистрирует | [Бизнес-пайплайн](../../examples/product-enrichment/src/main/java/example/ProductEnrichment.java) |
 | stepPolicy() | Возвращает StepPolicy для явного then(..., policy) | [HTTP-шаг](../../examples/product-enrichment/src/main/java/example/ProductEnrichment.java) |
 | process(pipeline, source) | Применяет параллельность и порядок, не заменяет наблюдатель переданного пайплайна | [Обработка и проверки](../../examples/product-enrichment/src/main/java/example/DemoChecks.java) |
 | Замена StepPolicy | Меняет классификатор IOException/TimeoutException, таймаут и бюджет повторов | [CustomDefaults.java](../../examples/product-enrichment/src/main/java/example/CustomDefaults.java) |
@@ -110,8 +110,8 @@ advice (иметь меньшее значение order), а транзакци
 | Суффикс | По умолчанию | Проверка / применение |
 | --- | --- | --- |
 | enabled | true | false запрещает установку стандартных beans, включая AOP |
-| concurrency | 4 | Положительное число; только factory.process |
-| ordering | INPUT | INPUT или COMPLETION; только factory.process |
+| concurrency | 4 | Положительное число; factory.start и factory.process |
+| ordering | INPUT | INPUT или COMPLETION; factory.start и factory.process |
 | step.timeout | 30s | Положительный; попытка core либо описанный выше таймаут сигналов AOP |
 | step.max-retries | 0 | 0…2147483646; AOP дополнительно требует retrySafe=true |
 | step.retry-delay | 100ms | Неотрицательная фиксированная задержка, ноль означает немедленный повтор |
@@ -164,3 +164,15 @@ testJavaVersion выбирает другой установленный toolcha
 [Flux](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html).
 
 [← Практическое руководство](ru.md) · [Версии](../index.md) · [README](../../README.md)
+
+## Обработка напрямую через pipeline фабрики
+
+factory.start() закрепляет настроенные бюджет записей и порядок выдачи, поэтому
+сервис хранит один pipeline и возвращает pipeline.process(records). then/map/
+thenIf/observe сохраняют настройки. withProcessing(options) заменяет их в новом
+неизменяемом определении; исходное не меняется. Явные
+process(records, concurrency, ordering) и factory.process(pipeline, records)
+сохранены. Политика шага остаётся явной: настроенные повторы не применяются
+скрытно к валидации или каждому обычному методу.
+
+[Полный HTTP-consumer](../../examples/webflux-products/README.md) · [README](../../README.md)

@@ -1,5 +1,37 @@
 # Verification / Проверки — 2026-11-05
 
+## OSS-013 integration update — 2026-11-05
+
+- Java 17: starter build/source/Javadoc packaging and all 18 configuration/proxy tests passed.
+- New separate Maven-artifact WebFlux consumer: one real HTTP integration scenario passed;
+  two NDJSON records preserve input order, first catalogue 503 retries once, invalid
+  input returns 400 before catalogue access, catalogue 401 is called once and becomes 502.
+- The application requires both Boot 4 WebFlux and WebClient starters. Initial missing
+  WebClient.Builder was fixed in the consumer and both language guides.
+- Existing annotated consumer passed: lazy=true, monoMethodAttempts=3,
+  fluxMethodAttempts=1, annotatedHttpRequests=5. Advisor implementation was unchanged.
+- Current companion core: 33 core + 5 Jolt tests passed on Java 17. The named read
+  policy excludes unclassified I/O failures (including invalid TLS certificates).
+- README examples match compiled consumer classes. Local documentation links/anchors,
+  workflow YAML and application YAML were checked. CI gained the real HTTP consumer.
+- This change does not rerun the full Java 21/25/27 matrix. No registry publication,
+  production auth/load benchmark or external deployment is implied by local checks.
+
+### Русский
+
+В OSS-013 прошли сборка стартера на Java 17, 18 тестов конфигурации/proxy и отдельный
+HTTP-consumer артефактов Maven. Он проверяет порядок двух NDJSON-записей, один повтор
+503, 400 до обращения к каталогу и неповторённый 401 каталога с ответом 502.
+Для Boot 4 явно подключены стартеры WebFlux и WebClient; пример и инструкции совпадают.
+Старый AOP-consumer сохранил lazy=true, три попытки Mono, одну Flux и пять HTTP-вызовов.
+Advice не менялся. В core прошли 33 теста и 5 Jolt; профиль чтения не повторяет
+неклассифицированные I/O-сбои, включая неверный TLS-сертификат. Ссылки/якоря и YAML
+проверены; HTTP-consumer добавлен в CI. Полная матрица JVM этим изменением не
+повторяется, удалённой публикации и проверки рабочего развёртывания нет.
+
+[Reproduce / Повторить](../CONTRIBUTING.md)
+
+
 [EN guide](0.1.0/en.md) · [Руководство](0.1.0/ru.md) · [Versions / Версии](index.md) · [README](../README.md)
 
 ## English

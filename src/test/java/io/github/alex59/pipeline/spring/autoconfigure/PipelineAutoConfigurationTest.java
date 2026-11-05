@@ -67,7 +67,7 @@ class PipelineAutoConfigurationTest {
                 started.incrementAndGet();
                 return gates.get(value).asMono();
             });
-            StepVerifier.create(factory.process(pipeline, Flux.range(0, 3)))
+            StepVerifier.create(pipeline.process(Flux.range(0, 3)))
                     .then(() -> assertThat(started.get()).isEqualTo(2))
                     .then(() -> gates.get(1).tryEmitValue(1)).expectNext(1)
                     .then(() -> assertThat(started.get()).isEqualTo(3))

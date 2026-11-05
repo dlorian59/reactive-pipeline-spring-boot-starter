@@ -29,3 +29,6 @@ jobs:
       - name: Run the packaged-artifact consumer
         working-directory: reactive-pipeline-spring-boot-starter
         run: ./gradlew -p examples/product-enrichment run --no-daemon
+      - name: Verify the existing WebFlux application consumer over HTTP
+        working-directory: reactive-pipeline-spring-boot-starter
+        run: ./gradlew -p examples/webflux-products test --no-daemon

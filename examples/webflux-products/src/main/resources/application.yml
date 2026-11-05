@@ -1,0 +1,14 @@
+catalog:
+  base-url: ${CATALOG_BASE_URL:http://127.0.0.1:9091}
+reactive:
+  pipeline:
+    concurrency: 4
+    ordering: INPUT
+    step:
+      timeout: 3s
+      max-retries: 2
+      retry-delay: 100ms
+spring:
+  http:
+    codecs:
+      max-in-memory-size: 64KB

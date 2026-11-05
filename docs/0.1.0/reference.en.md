@@ -11,7 +11,7 @@ pipeline programming model. The core remains a separate Java 17 library.
 | Public capability | Behavior | Source and executable example |
 | --- | --- | --- |
 | PipelineFactory(StepPolicy, int, Ordering, StepObserver) | Immutable explicit defaults; positive concurrency; other arguments non-null | [Factory source](../../src/main/java/io/github/alex59/pipeline/spring/PipelineFactory.java), [custom factory](../../examples/product-enrichment/src/main/java/example/CustomDefaults.java) |
-| start<T>() | Returns core Pipeline<T,T>, with the configured observer; no execution or registration | [Business pipeline](../../examples/product-enrichment/src/main/java/example/ProductEnrichment.java) |
+| start<T>() | Returns core Pipeline<T,T>, with configured observer and processing defaults; no execution or registration | [Business pipeline](../../examples/product-enrichment/src/main/java/example/ProductEnrichment.java) |
 | stepPolicy() | Returns the selected StepPolicy for explicit then(..., policy) calls | [HTTP step](../../examples/product-enrichment/src/main/java/example/ProductEnrichment.java) |
 | process(pipeline, source) | Applies configured concurrency and ordering; does not change that pipeline's observer | [Processing and checks](../../examples/product-enrichment/src/main/java/example/DemoChecks.java) |
 | StepPolicy bean override | Replaces the default IOException/TimeoutException classifier, timeout and retry budget | [CustomDefaults.java](../../examples/product-enrichment/src/main/java/example/CustomDefaults.java) |
@@ -110,8 +110,8 @@ All names below start with reactive.pipeline. Settings bind once at startup.
 | Suffix | Default | Validation / effect |
 | --- | --- | --- |
 | enabled | true | false prevents starter defaults, including AOP, from being installed |
-| concurrency | 4 | Positive; used only by factory.process |
-| ordering | INPUT | INPUT or COMPLETION; used only by factory.process |
+| concurrency | 4 | Positive; attached by factory.start; also used by factory.process |
+| ordering | INPUT | INPUT or COMPLETION; attached by factory.start; also used by factory.process |
 | step.timeout | 30s | Positive; per core attempt or the AOP signal-timeout contract above |
 | step.max-retries | 0 | 0…2147483646; AOP additionally requires retrySafe=true |
 | step.retry-delay | 100ms | Nonnegative; fixed delay, zero means immediate retry |
@@ -164,3 +164,15 @@ Primary sources: [Spring proxying](https://docs.spring.io/spring-framework/refer
 [Flux](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html).
 
 [← Practical guide](en.md) · [Versions](../index.md) · [README](../../README.md)
+
+## Direct processing on a factory-created pipeline
+
+factory.start() now attaches the configured record budget and output order, so a
+service can keep one pipeline and return pipeline.process(records). Subsequent
+then/map/thenIf/observe keep those settings. withProcessing(options) replaces them
+on a new immutable definition; the original is unchanged. Explicit
+process(records, concurrency, ordering) and factory.process(pipeline, records)
+remain supported. Step policy is still opt-in; no configured retry is silently
+applied to validation or every ordinary method.
+
+[Complete HTTP consumer](../../examples/webflux-products/README.md) · [README](../../README.md)
